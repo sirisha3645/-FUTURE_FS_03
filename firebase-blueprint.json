@@ -1,0 +1,64 @@
+{
+  "entities": {
+    "Appointment": {
+      "title": "Appointment",
+      "description": "A booked salon or bridal treatment slot.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+         "customerName": { "type": "string" },
+         "phone": { "type": "string" },
+         "email": { "type": "string" },
+         "serviceId": { "type": "string" },
+         "serviceName": { "type": "string" },
+         "stylistId": { "type": "string" },
+         "stylistName": { "type": "string" },
+         "date": { "type": "string" },
+         "time": { "type": "string" },
+         "notes": { "type": "string" },
+         "status": { "type": "string", "enum": ["pending", "confirmed", "cancelled"] },
+         "price": { "type": "integer" },
+         "createdAt": { "type": "string" }
+      },
+      "required": ["customerName", "phone", "email", "serviceName", "date", "time", "status", "price", "createdAt"]
+    },
+    "ContactMessage": {
+      "title": "ContactMessage",
+      "description": "User feedback or query submitted through the contact page.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "message": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["name", "email", "message", "createdAt"]
+    },
+    "Subscriber": {
+      "title": "Subscriber",
+      "description": "Newsletter subscriber email.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "subscriptionDate": { "type": "string" }
+      },
+      "required": ["email", "subscriptionDate"]
+    }
+  },
+  "firestore": {
+    "/appointments/{appointmentId}": {
+      "schema": "Appointment",
+      "description": "Collection of all beauty treatment appointments and bridal slots"
+    },
+    "/contactMessages/{contactMessageId}": {
+      "schema": "ContactMessage",
+      "description": "Inquiries, questions, or wedding details from brides and guests"
+    },
+    "/subscribers/{emailHash}": {
+      "schema": "Subscriber",
+      "description": "Subscribed emails for newsletter"
+    }
+  }
+}

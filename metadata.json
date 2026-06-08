@@ -1,0 +1,6 @@
+{
+  "name": "Saanvi Bridal & Beauty Studio",
+  "description": "A premium luxury Indian beauty salon and bridal studio located in Hyderabad, India, featuring modern Indian aesthetics, glassmorphism, and responsive booking systems.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

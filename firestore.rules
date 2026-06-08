@@ -1,0 +1,82 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'sirsha3645@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Collection constraints
+    match /appointments/{appointmentId} {
+      allow create: if isValidId(appointmentId)
+        && request.resource.data.customerName is string
+        && request.resource.data.customerName.size() <= 100
+        && request.resource.data.phone is string
+        && request.resource.data.phone.size() <= 30
+        && request.resource.data.email is string
+        && request.resource.data.email.size() <= 100
+        && request.resource.data.serviceName is string
+        && request.resource.data.serviceName.size() <= 150
+        && request.resource.data.date is string
+        && request.resource.data.date.size() == 10
+        && request.resource.data.time is string
+        && request.resource.data.time.size() <= 20
+        && request.resource.data.notes is string
+        && request.resource.data.notes.size() <= 1000
+        && request.resource.data.status in ['pending', 'confirmed', 'cancelled']
+        && request.resource.data.price is int
+        && request.resource.data.price >= 0
+        && request.resource.data.createdAt is string;
+
+      allow read, delete: if isAdmin();
+      
+      allow update: if isAdmin();
+    }
+
+    match /contactMessages/{messageId} {
+      allow create: if isValidId(messageId)
+        && request.resource.data.name is string
+        && request.resource.data.name.size() <= 100
+        && request.resource.data.email is string
+        && request.resource.data.email.size() <= 100
+        && request.resource.data.phone is string
+        && request.resource.data.phone.size() <= 30
+        && request.resource.data.message is string
+        && request.resource.data.message.size() <= 2000
+        && request.resource.data.createdAt is string;
+
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /subscribers/{subscriberId} {
+      allow create: if isValidId(subscriberId)
+        && request.resource.data.email is string
+        && request.resource.data.email.size() <= 100
+        && request.resource.data.subscriptionDate is string;
+
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /admins/{adminId} {
+      allow read: if isSignedIn() && request.auth.uid == adminId;
+      allow write: if false; // System only or manual setup inside the Firebase console
+    }
+  }
+}
